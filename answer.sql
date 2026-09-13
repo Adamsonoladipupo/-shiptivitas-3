@@ -15,6 +15,26 @@ GROUP BY date(login_timestamp, 'unixepoch')
 ORDER BY login_date;
 
 
+WITH daily_users AS (
+    SELECT
+        date(login_timestamp, 'unixepoch') AS login_date,
+        COUNT(DISTINCT user_id) AS daily_active_users
+    FROM login_history
+    GROUP BY date(login_timestamp, 'unixepoch')
+)
+SELECT
+    CASE
+        WHEN login_date < 'FEATURE_DATE' THEN 'before'
+        ELSE 'after'
+    END AS period,
+    ROUND(AVG(daily_active_users), 2) AS average_daily_active_users
+FROM daily_users
+GROUP BY period
+ORDER BY period;
+
+
+
+
 -- PART 2: Create a SQL query that indicates the number of status changes by card
 
 SELECT
